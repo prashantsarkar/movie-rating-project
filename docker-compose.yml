@@ -1,0 +1,47 @@
+version: "3"
+services:
+  discovery-server:
+    image: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - movie-rating-network
+      
+  movie-catalog-service:
+    image: movie-catalog-service
+    ports:
+      - "8091:8091"
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery-server:8761/eureka
+    networks:
+      - movie-rating-network
+    depends_on:
+      - discovery-server
+
+  movie-info-service:
+    image: movie-info-service
+    expose:
+      - "8092"
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery-server:8761/eureka
+    networks:
+      - movie-rating-network
+    depends_on:
+      - discovery-server
+
+  ratings-data-service:
+    image: ratings-data-service
+    expose:
+      - "8093"
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery-server:8761/eureka
+    networks:
+      - movie-rating-network
+    depends_on:
+      - discovery-server
+
+networks:
+  movie-rating-network:
